@@ -184,17 +184,15 @@ var CAMS = {
   "Mölle": [
     {
       name: "Mölle – Windy webbkamera",
-      type: "link",
-      url: "https://www.windy.com/sv/-Webbkameror/Sverige/Sk%C3%A5ne-l%C3%A4n/H%C3%B6gan%C3%A4s/M%C3%B6lle/webcams/1597825227",
-      thumb: "https://images.windy.com/webcams/1597825227/1597825227.jpg",
+      type: "windy",
+      id: "1597825227",
     },
   ],
   "Kåseberga": [
     {
       name: "Kåseberga – Windy webbkamera",
-      type: "link",
-      url: "https://www.windy.com/webcams/1507210905",
-      thumb: "https://images.windy.com/webcams/1507210905/1507210905.jpg",
+      type: "windy",
+      id: "1507210905",
     },
   ],
 };
@@ -210,7 +208,14 @@ function buildCamSection(spot) {
   var cols = cams.length === 1 ? 'one' : 'two';
 
   var cards = cams.map(function(cam) {
-    if (cam.type === 'youtube') {
+    if (cam.type === 'windy') {
+      // Windy allows iframe embed — shows live camera directly
+      var embedUrl = 'https://webcams.windy.com/' + cam.id + '/player/current.html';
+      return '<div class="cam-card">'
+        + '<iframe src="' + embedUrl + '" frameborder="0" allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;border-radius:6px 6px 0 0"></iframe>'
+        + '<div class="cam-info"><span class="cam-name">' + cam.name + '</span><span class="cam-time">Windy Live</span></div>'
+        + '</div>';
+    } else if (cam.type === 'youtube') {
       // YouTube embed — works everywhere, no CORS
       var embedUrl = 'https://www.youtube.com/embed/' + cam.id + '?autoplay=0&rel=0&modestbranding=1';
       return '<div class="cam-card">'
