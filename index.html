@@ -85,21 +85,14 @@
     .cam-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
     .cam-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.18em}
     .cam-badge{font-size:9px;background:rgba(34,197,94,.13);border:1px solid rgba(34,197,94,.3);color:#22c55e;padding:2px 8px;border-radius:3px;letter-spacing:.1em;text-transform:uppercase}
-    .cam-grid{display:grid;gap:8px}
-    .cam-grid.one{grid-template-columns:1fr}
-    .cam-grid.two{grid-template-columns:1fr 1fr}
-    .cam-card{background:rgba(0,0,0,.35);border:1px solid rgba(74,159,212,.18);border-radius:8px;overflow:hidden;position:relative}
-    .cam-img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover;background:#061220}
-    .cam-img-wrap{position:relative;cursor:pointer}
-    .cam-img-wrap::after{content:'▶';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px;color:rgba(255,255,255,.7);background:rgba(0,0,0,.25);opacity:0;transition:opacity .2s}
-    .cam-img-wrap:hover::after{opacity:1}
-    .cam-info{padding:7px 10px;display:flex;justify-content:space-between;align-items:center}
-    .cam-name{font-size:11px;color:var(--light)}
-    .cam-time{font-size:10px;color:var(--muted)}
-    .cam-err{padding:22px;text-align:center;font-size:11px;color:var(--muted);font-style:italic}
-    .cam-loading{padding:22px;text-align:center}
-    .cam-spinner{width:20px;height:20px;border:2px solid rgba(74,159,212,.15);border-top-color:var(--accent);border-radius:50%;margin:0 auto 6px;animation:sp .85s linear infinite}
-    .cam-api-note{font-size:10px;color:var(--dim);letter-spacing:.09em;margin-top:6px;font-style:italic}
+    .cam-links{display:flex;flex-direction:column;gap:7px}
+    .cam-link-card{display:flex;align-items:center;gap:12px;padding:11px 14px;background:rgba(74,159,212,.06);border:1px solid rgba(74,159,212,.18);border-radius:8px;text-decoration:none;color:inherit;transition:background .18s,border-color .18s}
+    .cam-link-card:hover{background:rgba(74,159,212,.13);border-color:rgba(74,159,212,.4)}
+    .cam-link-icon{font-size:20px;flex-shrink:0}
+    .cam-link-text{flex:1;min-width:0}
+    .cam-link-name{font-size:13px;color:var(--bright);margin-bottom:2px}
+    .cam-link-hint{font-size:10px;color:var(--muted)}
+    .cam-link-arrow{font-size:16px;color:var(--accent);flex-shrink:0}
 
 
     footer{text-align:center;margin-top:50px;padding-top:22px;border-top:1px solid rgba(74,159,212,.1)}
@@ -164,85 +157,67 @@ var SPOTS = [
 var CAMS = {
   "Appeviken": [
     {
-      name: "Apelviken – Stranden & viken",
-      type: "youtube",
-      id: "vQ3IGhbe8xk",
+      name: "Apelviken – Stormhuset (surfare)",
+      url:  "https://stormhuset.se/",
+      hint: "Panoramavy från viken · Varbergs Förenade Surfare"
     },
     {
-      name: "Apelviken – Mot Rödskär (surfare)",
-      type: "youtube",
-      id: "K8SjyZXywVY",
+      name: "Apelviken – Camping & strand",
+      url:  "https://www.apelviken.se/webbkamera",
+      hint: "3 kameror · Dygnet runt"
     },
   ],
   "Ringenäs": [
     {
-      name: "Kåsa Strand, Varberg (Mediateknik)",
-      type: "youtube",
-      id: "p49CeURYHUM",
+      name: "Kåsa Strand (Lilla Apelviken)",
+      url:  "https://www.apelviken.se/webbkamera",
+      hint: "Kåsa-kameran längre ner på sidan"
     },
   ],
   "Mölle": [
     {
       name: "Mölle – Windy webbkamera",
-      type: "windy",
-      id: "1597825227",
+      url:  "https://www.windy.com/sv/-Webbkameror/Sverige/Sk%C3%A5ne-l%C3%A4n/H%C3%B6gan%C3%A4s/M%C3%B6lle/webcams/1597825227",
+      hint: "Windy.com · Skåne NV"
     },
   ],
   "Kåseberga": [
     {
       name: "Kåseberga – Windy webbkamera",
-      type: "windy",
-      id: "1507210905",
+      url:  "https://www.windy.com/webcams/1507210905",
+      hint: "Windy.com · Skåne SO"
+    },
+  ],
+  "Skäret": [
+    {
+      name: "Mölle / Skälderviken – Windy",
+      url:  "https://www.windy.com/sv/-Webbkameror/Sverige/Sk%C3%A5ne-l%C3%A4n/H%C3%B6gan%C3%A4s/webcams?56.24,12.56,10",
+      hint: "Windy.com · Kameror i närheten"
     },
   ],
 };
 
 function buildCamSection(spot) {
   var cams = CAMS[spot.name];
-
-  if (!cams || cams.length === 0) {
-    // No camera — show subtle note, don't clutter UI
-    return '';
-  }
-
-  var cols = cams.length === 1 ? 'one' : 'two';
+  if (!cams || !cams.length) return '';
 
   var cards = cams.map(function(cam) {
-    if (cam.type === 'windy') {
-      // Windy allows iframe embed — shows live camera directly
-      var embedUrl = 'https://webcams.windy.com/' + cam.id + '/player/current.html';
-      return '<div class="cam-card">'
-        + '<iframe src="' + embedUrl + '" frameborder="0" allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;border-radius:6px 6px 0 0"></iframe>'
-        + '<div class="cam-info"><span class="cam-name">' + cam.name + '</span><span class="cam-time">Windy Live</span></div>'
-        + '</div>';
-    } else if (cam.type === 'youtube') {
-      // YouTube embed — works everywhere, no CORS
-      var embedUrl = 'https://www.youtube.com/embed/' + cam.id + '?autoplay=0&rel=0&modestbranding=1';
-      return '<div class="cam-card">'
-        + '<div class="cam-yt-wrap">'
-        + '<iframe src="' + embedUrl + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;border-radius:6px 6px 0 0"></iframe>'
-        + '</div>'
-        + '<div class="cam-info"><span class="cam-name">' + cam.name + '</span><span class="cam-time">YouTube Live</span></div>'
-        + '</div>';
-    } else {
-      // External link — no embed possible, show a styled button
-      return '<div class="cam-card">'
-        + '<a href="' + cam.url + '" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;aspect-ratio:16/9;background:rgba(74,159,212,.06);text-decoration:none;border-radius:6px 6px 0 0">'
-        + '<span style="font-size:28px">📷</span>'
-        + '<span style="font-size:12px;color:var(--light);letter-spacing:.1em">Öppna kamera ↗</span>'
-        + '<span style="font-size:10px;color:var(--muted)">Öppnas på Windy.com</span>'
-        + '</a>'
-        + '<div class="cam-info"><span class="cam-name">' + cam.name + '</span></div>'
-        + '</div>';
-    }
+    return '<a href="' + cam.url + '" target="_blank" rel="noopener" class="cam-link-card">'
+      + '<div class="cam-link-icon">📷</div>'
+      + '<div class="cam-link-text">'
+      + '<div class="cam-link-name">' + cam.name + '</div>'
+      + '<div class="cam-link-hint">' + cam.hint + '</div>'
+      + '</div>'
+      + '<div class="cam-link-arrow">↗</div>'
+      + '</a>';
   }).join('');
 
   return '<div class="cam-section">'
     + '<div class="cam-header">'
-    + '<span class="cam-title">📷 Webbkameror</span>'
-    + '<span class="cam-badge">' + cams.length + ' kamera' + (cams.length > 1 ? 'r' : '') + '</span>'
+    + '<span class="cam-title">📷 Webbkameror i närheten</span>'
+    + '<span class="cam-badge">' + cams.length + (cams.length > 1 ? ' kameror' : ' kamera') + '</span>'
     + '</div>'
-    + '<div class="cam-grid ' + cols + '">' + cards + '</div>'
+    + '<div class="cam-links">' + cards + '</div>'
     + '</div>';
 }
 
