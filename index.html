@@ -225,17 +225,15 @@ function buildCamSection(spot) {
         + '<div class="cam-info"><span class="cam-name">' + cam.name + '</span><span class="cam-time">YouTube Live</span></div>'
         + '</div>';
     } else {
-      // Link with thumbnail — opens in new tab
-      var thumb = cam.thumb || '';
-      var imgHtml = thumb
-        ? '<a href="' + cam.url + '" target="_blank" rel="noopener"><img class="cam-img" src="' + thumb + '" alt="' + cam.name + '" loading="lazy"></a>'
-        : '<div class="cam-err">Klicka nedan för att öppna kameran</div>';
+      // External link — no embed possible, show a styled button
       return '<div class="cam-card">'
-        + imgHtml
-        + '<div class="cam-info">'
-        + '<span class="cam-name">' + cam.name + '</span>'
-        + '<a href="' + cam.url + '" target="_blank" rel="noopener" style="font-size:10px;color:var(--accent);text-decoration:none">Öppna ↗</a>'
-        + '</div></div>';
+        + '<a href="' + cam.url + '" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;aspect-ratio:16/9;background:rgba(74,159,212,.06);text-decoration:none;border-radius:6px 6px 0 0">'
+        + '<span style="font-size:28px">📷</span>'
+        + '<span style="font-size:12px;color:var(--light);letter-spacing:.1em">Öppna kamera ↗</span>'
+        + '<span style="font-size:10px;color:var(--muted)">Öppnas på Windy.com</span>'
+        + '</a>'
+        + '<div class="cam-info"><span class="cam-name">' + cam.name + '</span></div>'
+        + '</div>';
     }
   }).join('');
 
